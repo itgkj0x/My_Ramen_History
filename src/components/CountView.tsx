@@ -11,7 +11,6 @@ function CountView() {
         が経過しました
         <Emoji />
     </p>
-    <p className="text-3xl m-12">早く食べましょう</p>
     </>
   )
 }
