@@ -1,5 +1,3 @@
-import React from "react";
-
 function HistoryView({ history }: { history: { shop: string; date: string; rating: string }[] }) {
   return (
     <>
@@ -14,7 +12,7 @@ function HistoryView({ history }: { history: { shop: string; date: string; ratin
           </thead>
           <tbody>
             {history.map((item, idx) => (
-              <tr key={idx}>
+              <tr key={idx} id="lists">
                 <td>{item.shop}</td>
                 <td>{item.date}</td>
                 <td>{item.rating}</td>

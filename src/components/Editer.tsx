@@ -8,13 +8,16 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import AddIcon from '@mui/icons-material/Add';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 
-import dayjs, { Dayjs } from 'dayjs';
+import { Dayjs } from 'dayjs';
 
-function Editer({ onSave }: { onSave: (item: { shop: string; date: string; rating: string }) => void }) {
+
+
+
+
+function Editer({ onSave }: { onSave: (item: { shop: string; date: string; rating: string }[]) => void }) {
   const [open, setOpen] = useState(false);
   const [shop, setShop] = useState('');
   const [date, setDate] = useState<Dayjs | null>(null);
@@ -34,61 +37,168 @@ function Editer({ onSave }: { onSave: (item: { shop: string; date: string; ratin
       date: date.format('YYYY-MM-DD'),
       rating: rating.toString(),
     };
-    onSave(newItem); // ←ここで親に通知
+    onSave([newItem]); // ←ここで親に通知
     setShop('');
     setDate(null);
     setRating(2.5);
     setOpen(false);
   };
 
+  // エクスポート処理
+  const handleExport = () => {
+    const data = localStorage.getItem('data');
+    if (!data) {
+      alert('エクスポートするデータがありません');
+      return;
+    }
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ramen_history.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  // インポート処理
+  const handleImport = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = async (e: any) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const json = JSON.parse(text);
+        if (!Array.isArray(json)) {
+          alert('不正なファイル形式です');
+          return;
+        }
+        // localStorageに保存
+        localStorage.setItem('data', JSON.stringify(json));
+        // 親に新しい履歴を渡して再描画
+        onSave(json);
+        alert('インポートが完了しました');
+      } catch {
+        alert('ファイルの読み込みに失敗しました');
+      }
+    };
+    input.click();
+  };
+
   return (
     <>
-      <Box sx={{ '& > :not(style)': { m: 1 } }}>
+      <Box sx={{ m: 4, '& > :not(style)': { m: 1 } }}>
         <Fab variant="extended" color="primary" aria-label="add" onClick={handleOpen}>
           <AddIcon sx={{ mr: 1 }}/>
-          Add
+          追加
         </Fab>
-        <Fab variant="extended">
+        <Fab variant="extended" onClick={handleImport}>
           <SystemUpdateAltIcon sx={{ mr: 1 }} />
           import
         </Fab>
-        <Fab variant="extended">
+        <Fab variant="extended" onClick={handleExport}>
           <ShareIcon sx={{ mr: 1 }} />
           Export
         </Fab>
-        <Fab disabled aria-label="like">
-          <FavoriteIcon />
-        </Fab>
       </Box>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>新規記録</DialogTitle>
-        <DialogContent sx={{display:'flex', alignItems:'center', justifyContent:'space-around', flexDirection:'column', m:4}}>
-            <TextField
-                id="add_shop"
-                label="店名"
-                sx={{m:2}}
-                value={shop}
-                onChange={e => setShop(e.target.value)}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            p: 2,
+            background: '#fff8f0',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+            minWidth: 340,
+          }
+        }}
+      >
+        <DialogTitle
+          sx={{
+            textAlign: 'center',
+            fontWeight: 'bold',
+            color: '#00b3ffff',
+            fontSize: '1.4rem',
+            letterSpacing: '0.1em',
+            pb: 0,
+          }}
+        >
+          新規記録
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            gap: 2,
+            mt: 2,
+            mb: 1,
+            px: 2,
+          }}
+        >
+          <TextField
+            id="add_shop"
+            label="店名"
+            variant="outlined"
+            sx={{ width: '100%', maxWidth: 260 }}
+            value={shop}
+            onChange={e => setShop(e.target.value)}
+          />
+          <LocalizationProvider dateAdapter={AdapterDayjs} >
+            <DatePicker
+              label="日付"
+              value={date}
+              onChange={setDate}
+              sx={{ width: '100%', maxWidth: 260 }}
             />
-            <LocalizationProvider dateAdapter={AdapterDayjs} >
-                <DatePicker
-                  label="日付"
-                  value={date}
-                  onChange={setDate}
-                  sx={{m:2}}
-                />
-            </LocalizationProvider>
+          </LocalizationProvider>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+            <span style={{ color: '#00b3ffff', fontWeight: 'bold' }}>評価</span>
             <Rating
               name="half-rating"
               value={rating}
               precision={0.5}
               onChange={(_, newValue) => setRating(newValue)}
-              sx={{m:4}}
+              sx={{ ml: 1 }}
             />
+          </Box>
         </DialogContent>
-        <DialogActions>
-            <Button onClick={handleSave}>保存</Button>
-            <Button onClick={handleClose}>閉じる</Button>
+        <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            sx={{
+              background: '#13c0ff',
+              color: '#fff',
+              fontWeight: 'bold',
+              borderRadius: 2,
+              px: 4,
+              mr: 2,
+              '&:hover': { background: '#0e9fd8' }
+            }}
+          >
+            保存
+          </Button>
+          <Button
+            onClick={handleClose}
+            variant="outlined"
+            sx={{
+              color: '#090909ff',
+              borderColor: '#000000ff',
+              fontWeight: 'bold',
+              borderRadius: 2,
+              px: 4,
+              '&:hover': { background: '#fff3e0', borderColor: '#b35900' }
+            }}
+          >
+            閉じる
+          </Button>
         </DialogActions>
       </Dialog>
     </>

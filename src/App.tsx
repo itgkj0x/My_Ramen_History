@@ -20,14 +20,22 @@ function App() {
   }, []);
 
   // 保存時に呼び出す関数
-  const handleSave = (newItem: { shop: string; date: string; rating: string }) => {
-    const newHistory = [...history, newItem];
-    setHistory(newHistory);
-    localStorage.setItem('data', JSON.stringify(newHistory));
+  const handleSave = (newData: { shop: string; date: string; rating: string } | { shop: string; date: string; rating: string }[]) => {
+    if (Array.isArray(newData)) {
+      setHistory(newData);
+      localStorage.setItem('data', JSON.stringify(newData));
+    } else {
+      const newHistory = [...history, newData];
+      setHistory(newHistory);
+      localStorage.setItem('data', JSON.stringify(newHistory));
+    }
   };
 
   return (
     <>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet" />
       <CountView />
       <Editer onSave={handleSave} />
       <HistoryView history={history} />
