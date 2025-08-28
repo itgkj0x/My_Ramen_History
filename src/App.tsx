@@ -1,8 +1,8 @@
 import './App.css'
-import CountView from './components/CountView'
-import HistoryView from './components/HistoryView'
-import Editer from './components/Editer'
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
+import CountView from './components/CountView';
+import HistoryView from './components/HistoryView';
+import Editer from './components/Editer';
 
 function App() {
   const [history, setHistory] = useState<{ shop: string; date: string; rating: string }[]>([]);
@@ -19,8 +19,10 @@ function App() {
     }
   }, []);
 
-  // 保存時に呼び出す関数
-  const handleSave = (newData: { shop: string; date: string; rating: string } | { shop: string; date: string; rating: string }[]) => {
+  // 保存・インポート時
+  const handleSave = (
+    newData: { shop: string; date: string; rating: string } | { shop: string; date: string; rating: string }[]
+  ) => {
     if (Array.isArray(newData)) {
       setHistory(newData);
       localStorage.setItem('data', JSON.stringify(newData));
@@ -31,11 +33,12 @@ function App() {
     }
   };
 
-  // 削除処理
+  // 削除時
   const handleDelete = (index: number) => {
     const newHistory = history.filter((_, i) => i !== index);
     setHistory(newHistory);
     localStorage.setItem('data', JSON.stringify(newHistory));
+    // window.location.reload(); ←不要
   };
 
   return (

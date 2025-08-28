@@ -13,30 +13,22 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import Tooltip from "@mui/material/Tooltip";
 
-function Emoji() {
+type HistoryItem = { shop: string; date: string; rating: string };
+
+function Emoji({ history }: { history: HistoryItem[] }) {
   const [days, setDays] = useState<number | null>(null);
 
   useEffect(() => {
-    const data = localStorage.getItem("data");
-    if (data) {
-      try {
-        const history: { date: string }[] = JSON.parse(data);
-        if (history.length > 0) {
-          const latest = history
-            .map((item) => item.date)
-            .sort((a, b) => dayjs(b).unix() - dayjs(a).unix())[0];
-          const diff = dayjs().diff(dayjs(latest), "day");
-          setDays(diff);
-        } else {
-          setDays(null);
-        }
-      } catch {
-        setDays(null);
-      }
+    if (history && history.length > 0) {
+      const latest = history
+        .map((item) => item.date)
+        .sort((a, b) => dayjs(b).unix() - dayjs(a).unix())[0];
+      const diff = dayjs().diff(dayjs(latest), "day");
+      setDays(diff);
     } else {
       setDays(null);
     }
-  }, []);
+  }, [history]);
 
   let icon = "❓";
   let label = "履歴が見つかりません";

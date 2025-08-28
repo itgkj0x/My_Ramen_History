@@ -17,7 +17,7 @@ function CountView({ history }: { history: HistoryItem[] }) {
     <p className="text-5xl my-12 flex" style={{ color: "#fff" }}>
       {days === 0 ? (
         <>
-          今日ラーメンを食べました <Emoji />
+          今日ラーメンを食べました <Emoji history={history} />
         </>
       ) : (
         <>
@@ -25,7 +25,7 @@ function CountView({ history }: { history: HistoryItem[] }) {
           <strong style={{ margin: "0 0.5em" }}>
             {days !== null ? `${days}日` : "--日"}
           </strong>
-          が経過しました <Emoji />
+          が経過しました <Emoji history={history} />
         </>
       )}
     </p>
