@@ -37,11 +37,12 @@ function Editer({ onSave }: { onSave: (item: { shop: string; date: string; ratin
       date: date.format('YYYY-MM-DD'),
       rating: rating.toString(),
     };
-    onSave([newItem]); // ←ここで親に通知
+    onSave(newItem);
     setShop('');
     setDate(null);
     setRating(2.5);
     setOpen(false);
+    window.location.reload(); // ← 追加
   };
 
   // エクスポート処理
@@ -77,11 +78,10 @@ function Editer({ onSave }: { onSave: (item: { shop: string; date: string; ratin
           alert('不正なファイル形式です');
           return;
         }
-        // localStorageに保存
         localStorage.setItem('data', JSON.stringify(json));
-        // 親に新しい履歴を渡して再描画
         onSave(json);
         alert('インポートが完了しました');
+        window.location.reload(); // ← 追加
       } catch {
         alert('ファイルの読み込みに失敗しました');
       }
