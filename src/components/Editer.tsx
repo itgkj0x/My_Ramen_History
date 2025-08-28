@@ -97,12 +97,10 @@ function Editer({ onSave }: { onSave: (item: { shop: string; date: string; ratin
           追加
         </Fab>
         <Fab variant="extended" onClick={handleImport}>
-          <SystemUpdateAltIcon sx={{ mr: 1 }} />
-          import
+          <SystemUpdateAltIcon sx={{ m: 1 }} />
         </Fab>
         <Fab variant="extended" onClick={handleExport}>
-          <ShareIcon sx={{ mr: 1 }} />
-          Export
+          <ShareIcon sx={{ m: 1 }} />
         </Fab>
       </Box>
       <Dialog
