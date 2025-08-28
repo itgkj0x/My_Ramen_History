@@ -1,45 +1,48 @@
-import { useEffect, useState } from "react"
-import Emoji from "./Emoji"
-import dayjs from "dayjs"
+import { useEffect, useState } from "react";
+import Emoji from "./Emoji";
+import dayjs from "dayjs";
 
 function CountView() {
-  const [days, setDays] = useState<number | null>(null)
+  const [days, setDays] = useState<number | null>(null);
 
   useEffect(() => {
-    const data = localStorage.getItem("data")
+    const data = localStorage.getItem("data");
     if (data) {
       try {
-        const history: { date: string }[] = JSON.parse(data)
+        const history: { date: string }[] = JSON.parse(data);
         if (history.length > 0) {
-          // 最新の日付を取得（降順ソートして最初を取得）
+          // 最新の日付を取得
           const latest = history
-            .map(item => item.date)
-            .sort((a, b) => dayjs(b).unix() - dayjs(a).unix())[0]
-          const diff = dayjs().diff(dayjs(latest), "day")
-          setDays(diff)
+            .map((item) => item.date)
+            .sort((a, b) => dayjs(b).unix() - dayjs(a).unix())[0];
+          const diff = dayjs().diff(dayjs(latest), "day");
+          setDays(diff);
         } else {
-          setDays(null)
+          setDays(null);
         }
       } catch {
-        setDays(null)
+        setDays(null);
       }
     } else {
-      setDays(null)
+      setDays(null);
     }
-  }, [])
+  }, []);
 
   return (
-    <>
-      <p className="text-5xl my-12 flex">
-        ラーメンに行ってから
-        <strong>
-          {days !== null ? `${days}日` : "--日"}
-        </strong>
-        が経過しました
-        <Emoji />
-      </p>
-    </>
-  )
+    <p className="text-5xl my-12 flex">
+      {days === 0 ? (
+        <>
+          今日ラーメンを食べました <Emoji />
+        </>
+      ) : (
+        <>
+          ラーメンに行ってから
+          <strong>{days !== null ? `${days}日` : "--日"}</strong>
+          が経過しました <Emoji />
+        </>
+      )}
+    </p>
+  );
 }
 
-export default CountView
+export default CountView;
