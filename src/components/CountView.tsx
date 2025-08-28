@@ -1,35 +1,20 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import Emoji from "./Emoji";
 import dayjs from "dayjs";
 
-function CountView() {
-  const [days, setDays] = useState<number | null>(null);
+type HistoryItem = { shop: string; date: string; rating: string };
 
-  useEffect(() => {
-    const data = localStorage.getItem("data");
-    if (data) {
-      try {
-        const history: { date: string }[] = JSON.parse(data);
-        if (history.length > 0) {
-          // 最新の日付を取得
-          const latest = history
-            .map((item) => item.date)
-            .sort((a, b) => dayjs(b).unix() - dayjs(a).unix())[0];
-          const diff = dayjs().diff(dayjs(latest), "day");
-          setDays(diff);
-        } else {
-          setDays(null);
-        }
-      } catch {
-        setDays(null);
-      }
-    } else {
-      setDays(null);
-    }
-  }, []);
+function CountView({ history }: { history: HistoryItem[] }) {
+  const days = useMemo(() => {
+    if (!history || history.length === 0) return null;
+    const latest = history
+      .map((item) => item.date)
+      .sort((a, b) => dayjs(b).unix() - dayjs(a).unix())[0];
+    return dayjs().diff(dayjs(latest), "day");
+  }, [history]);
 
   return (
-    <p className="text-5xl my-12 flex">
+    <p className="text-5xl my-12 flex" style={{ color: "#fff" }}>
       {days === 0 ? (
         <>
           今日ラーメンを食べました <Emoji />
@@ -37,7 +22,9 @@ function CountView() {
       ) : (
         <>
           ラーメンに行ってから
-          <strong>{days !== null ? `${days}日` : "--日"}</strong>
+          <strong style={{ margin: "0 0.5em" }}>
+            {days !== null ? `${days}日` : "--日"}
+          </strong>
           が経過しました <Emoji />
         </>
       )}

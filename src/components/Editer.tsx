@@ -17,7 +17,15 @@ import { Dayjs } from 'dayjs';
 
 
 
-function Editer({ onSave }: { onSave: (item: { shop: string; date: string; rating: string }[]) => void }) {
+function Editer({
+  onSave,
+}: {
+  onSave: (
+    item:
+      | { shop: string; date: string; rating: string }
+      | { shop: string; date: string; rating: string }[]
+  ) => void;
+}) {
   const [open, setOpen] = useState(false);
   const [shop, setShop] = useState('');
   const [date, setDate] = useState<Dayjs | null>(null);
@@ -37,12 +45,12 @@ function Editer({ onSave }: { onSave: (item: { shop: string; date: string; ratin
       date: date.format('YYYY-MM-DD'),
       rating: rating.toString(),
     };
-    onSave(newItem);
+    onSave(newItem); // ← オブジェクトで渡す
     setShop('');
     setDate(null);
     setRating(2.5);
     setOpen(false);
-    window.location.reload(); // ← 追加
+    window.location.reload();
   };
 
   // エクスポート処理
@@ -79,7 +87,7 @@ function Editer({ onSave }: { onSave: (item: { shop: string; date: string; ratin
           return;
         }
         localStorage.setItem('data', JSON.stringify(json));
-        onSave(json);
+        onSave(json); // ← 配列で渡す
         alert('インポートが完了しました');
         window.location.reload(); // ← 追加
       } catch {
