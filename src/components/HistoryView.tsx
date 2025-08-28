@@ -1,3 +1,5 @@
+import Rating from '@mui/material/Rating';
+
 function HistoryView({ history }: { history: { shop: string; date: string; rating: string }[] }) {
   return (
     <>
@@ -15,7 +17,15 @@ function HistoryView({ history }: { history: { shop: string; date: string; ratin
               <tr key={idx} id="lists">
                 <td>{item.shop}</td>
                 <td>{item.date}</td>
-                <td>{item.rating}</td>
+                <td>
+                  <Rating
+                    name={`rating-${idx}`}
+                    value={Number(item.rating)}
+                    precision={0.5}
+                    readOnly
+                    size="small"
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
